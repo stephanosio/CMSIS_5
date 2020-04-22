@@ -25,7 +25,7 @@ def writeTests(config,format):
     samples = Tools.normalize(samples)
     refs = Tools.normalize(refs)
     taps = Tools.normalize(taps)
-    
+
 
     ### For benchmarks
 
@@ -35,7 +35,7 @@ def writeTests(config,format):
 
     ### For tests
 
-    # blocksize 1 2 3 8 11 
+    # blocksize 1 2 3 8 11
     # taps 1 2 3 4 5 6 7 8 11 25
     # state numTaps + blockSize - 1
     # ref blockSize
@@ -47,18 +47,20 @@ def writeTests(config,format):
     x = Tools.normalize(x)
     # To avoid saturation
     x = x / 30.0
-    
+
 
     config.writeInput(1, x,"FirInput")
-    tapConfigs=[] 
-    output=[] 
-    defs=[] 
+    tapConfigs=[]
+    output=[]
+    defs=[]
 
     if format == 0 or format == 31:
-       blk = [1, 2, 3, 8, 9,10,11, 16, 23]
+       #blk = [1, 2, 3, 8, 9,10,11, 16, 23]
+       blk = [2, 3, 8, 9,10,11, 16, 23]
        taps = [1, 2, 3, 4, 5, 6, 7, 8, 11, 16, 23, 25]
     elif format == 15:
-       blk = [1, 2, 3, 12,13,14,15]
+       #blk = [1, 2, 3, 12,13,14,15]
+       blk = [3, 12,13,14,15]
        taps = [2, 3, 4, 5, 6, 7, 8, 11, 25]
     elif format == 7:
        blk = [1, 2, 3 ,20,21,22,23]
@@ -76,9 +78,9 @@ def writeTests(config,format):
 
         if format == 15:
           if t % 2 == 1:
-            nbTaps = nbTaps + 1 
+            nbTaps = nbTaps + 1
             coefs = np.append(coefs,[0.0])
-        
+
         out=signal.lfilter(pythonCoefs,[1.0],x[0:2*b])
 
         output += list(out)
@@ -93,18 +95,18 @@ def writeTests(config,format):
     config.writeInput(1, tapConfigs,"FirCoefs")
     config.writeReferenceS16(1,defs,"FirConfigs")
 
-    
+
 def generatePatterns():
     PATTERNDIR = os.path.join("Patterns","DSP","Filtering","FIR","FIR")
     PARAMDIR = os.path.join("Parameters","DSP","Filtering","FIR","FIR")
-    
+
     configf32=Tools.Config(PATTERNDIR,PARAMDIR,"f32")
     configq31=Tools.Config(PATTERNDIR,PARAMDIR,"q31")
     configq15=Tools.Config(PATTERNDIR,PARAMDIR,"q15")
     configq7=Tools.Config(PATTERNDIR,PARAMDIR,"q7")
-    
-    
-    
+
+
+
     writeTests(configf32,0)
     writeTests(configq31,31)
     writeTests(configq15,15)
